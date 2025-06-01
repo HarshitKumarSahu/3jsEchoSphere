@@ -1087,7 +1087,7 @@ class CamParallax {
     this.active = true;
     this.mousePos = { x: 0, y: 0 };
     this.params = {
-      intensity: 0.008,
+      intensity: 0.006,
       ease: 0.08,
     };
     this.bind();
@@ -1143,7 +1143,7 @@ class ParticleSystem {
     this.particlesGeom.setAttribute('position', new THREE.Float32BufferAttribute(this.particlesPos, 3));
     this.particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.02,
+      size: 0.025,
     });
     this.particleSystem = new THREE.Points(this.particlesGeom, this.particleMaterial);
     this.scene.add(this.particleSystem);
@@ -1184,8 +1184,8 @@ class Floor {
         glb.scene.traverse(child => {
           if (child instanceof THREE.Mesh) {
             this.floor = child;
-            this.floor.scale.multiplyScalar(1.525);
-            this.floor.translateY(-2)
+            this.floor.scale.multiplyScalar(1.725);
+            this.floor.translateY(-3)
             this.scene.add(this.floor);
             // Ensure material is visible
             // if (!child.material) {
@@ -1407,8 +1407,8 @@ class Spectrum {
         glb.scene.traverse(child => {
           if (child instanceof THREE.Mesh) {
             child.material = this.shaderMat;
-            child.scale.multiplyScalar(1.5);
-            child.position.y = -1.2;
+            child.scale.multiplyScalar(2.25);
+            child.position.y = -3;
           }
         });
         this.scene.add(glb.scene);
@@ -1442,30 +1442,31 @@ class MainThreeScene {
   }
 
   async init() {
-    this.renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl'), antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ 
+        canvas: document.getElementById('webgl'), 
+        antialias: true 
+    });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    this.renderer.toneMapping = THREE.LinearToneMapping;
+    this.renderer.toneMappingExposure = 0.5;
+    // this.renderer.toneMapping = THREE.ACESFilmicToneMapping
 
     const color = new THREE.Color(0x151515);
-    const fog = new THREE.Fog(color, 5, 40); // Adjusted fog for better visibility
+    const fog = new THREE.Fog(color, 3, 30); // Adjusted fog for better visibility
     this.scene = new THREE.Scene();
     this.scene.fog = fog;
     this.scene.background = color;
 
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.camera.position.set(0, 2, 5); // Moved camera up for better floor view
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+    this.camera.position.set(0, 0, 7); // Moved camera up for better floor view
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enabled = false;
-    this.controls.maxDistance = 40;
+    this.controls.maxDistance = 8;
     this.controls.minDistance = 3;
     this.controls.minPolarAngle = 0;
     this.controls.maxPolarAngle = Math.PI / 2 + 0.3;
 
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    this.scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(0, 10, 10);
-    this.scene.add(directionalLight);
 
     camParallax.init(this.camera);
 
