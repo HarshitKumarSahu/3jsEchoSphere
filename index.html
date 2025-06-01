@@ -1,14 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/src/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoundPillards</title>
+  <link rel="stylesheet" href="/src/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="container"></div>
-    <script type="module" src="/src/main.js"></script>
+  <div class="loadingScreen" id="loadingScreen">
+    <div class="wrapper">
+      <h2>Loading</h2>
+      <div class="progressBar">
+        <div class="progressFill" id="progressFill"></div>
+      </div>
+      <div class="progressUrl" id="progressUrl"></div>
+    </div>
+  </div>
+  <div class="titleScreen">
+    <div class="topLeft">
+      <h1>SoundPillards</h1>
+      <p>A simple creative coding example</p>
+    </div>
+    <button id="playPauseButton">Play</button>
+  </div>
+  <canvas id="webgl"></canvas>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/dat.gui@0.7.7/build/dat.gui.min.js"></script> -->
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
-
