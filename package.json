@@ -16,6 +16,7 @@
     "gsap": "^3.13.0",
     "imagesloaded": "^5.0.0",
     "three": "^0.176.0",
+    "tweakpane": "^4.0.5",
     "vite-plugin-glsl": "^1.4.1"
   }
 }

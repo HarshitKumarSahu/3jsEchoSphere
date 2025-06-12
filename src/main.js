@@ -2,8 +2,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as dat from 'dat.gui';
+import {Pane} from 'tweakpane';
 import vertex from './shaders/vertex.glsl';
 import fragment from './shaders/fragment.glsl';
+
+
 
 class RAF {
   constructor() {
@@ -38,14 +41,62 @@ class LoadingController {
   }
 }
 
+// class SoundReactor {
+//   constructor(audioUrl) {
+//     this.url = audioUrl;
+//     this.playFlag = false;
+//     this.bind();
+//   }
+
+//   init() {
+//     this.ctx = new AudioContext();
+//     this.audio = new Audio(this.url);
+//     this.audioSource = this.ctx.createMediaElementSource(this.audio);
+//     this.analyser = this.ctx.createAnalyser();
+//     this.analyser.smoothingTimeConstant = 0.8;
+//     this.audioSource.connect(this.analyser);
+//     this.audioSource.connect(this.ctx.destination);
+//     this.fdata = new Uint8Array(this.analyser.frequencyBinCount);
+//     this.audio.currentTime = 1;
+//   }
+
+//   play() {
+//     this.audio.play();
+//     this.playFlag = true;
+//     raf.subscribe('audioReactorUpdate', this.update.bind(this));
+//   }
+
+//   pause() {
+//     this.audio.pause();
+//     this.playFlag = false;
+//     raf.unsubscribe('audioReactorUpdate');
+//   }
+
+//   update() {
+//     this.analyser.getByteFrequencyData(this.fdata);
+//   }
+
+//   bind() {
+//     this.init = this.init.bind(this);
+//     this.update = this.update.bind(this);
+//     this.play = this.play.bind(this);
+//     this.pause = this.pause.bind(this);
+//   }
+// }
+
+
 class SoundReactor {
   constructor(audioUrl) {
     this.url = audioUrl;
     this.playFlag = false;
+    this.isInitialized = false;
+    this.PARAMS = { wave: 0 };
     this.bind();
   }
 
   init() {
+    if (this.isInitialized) return;
+
     this.ctx = new AudioContext();
     this.audio = new Audio(this.url);
     this.audioSource = this.ctx.createMediaElementSource(this.audio);
@@ -55,9 +106,34 @@ class SoundReactor {
     this.audioSource.connect(this.ctx.destination);
     this.fdata = new Uint8Array(this.analyser.frequencyBinCount);
     this.audio.currentTime = 1;
+
+    this.isInitialized = true;
+  }
+
+  setAudioSource(newUrl) {
+    if (!this.isInitialized) {
+      this.url = newUrl;
+      return;
+    }
+
+    this.url = newUrl;
+    this.audio.pause();
+    this.audioSource.disconnect();
+    this.audio = new Audio(this.url);
+    this.audioSource = this.ctx.createMediaElementSource(this.audio);
+    this.audioSource.connect(this.analyser);
+    this.audioSource.connect(this.ctx.destination);
+    this.audio.currentTime = 1;
+
+    if (this.playFlag) {
+      this.audio.play();
+    }
   }
 
   play() {
+    if (!this.isInitialized) {
+      this.init();
+    }
     this.audio.play();
     this.playFlag = true;
     raf.subscribe('audioReactorUpdate', this.update.bind(this));
@@ -70,7 +146,10 @@ class SoundReactor {
   }
 
   update() {
+    if (!this.isInitialized) return;
     this.analyser.getByteFrequencyData(this.fdata);
+    const avgAmplitude = this.fdata.reduce((sum, val) => sum + val, 0) / this.fdata.length;
+    this.PARAMS.wave = (avgAmplitude / 255) * 2 - 1;
   }
 
   bind() {
@@ -78,8 +157,90 @@ class SoundReactor {
     this.update = this.update.bind(this);
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
+    this.setAudioSource = this.setAudioSource.bind(this);
   }
 }
+
+// class SoundReactor {
+//   constructor(audioUrl) {
+//     this.url = audioUrl;
+//     this.playFlag = false;
+//     this.bind();
+//   }
+
+//   init() {
+//     this.ctx = new AudioContext();
+//     this.audio = new Audio(this.url);
+//     this.audioSource = this.ctx.createMediaElementSource(this.audio);
+//     this.analyser = this.ctx.createAnalyser();
+//     this.analyser.smoothingTimeConstant = 0.8;
+//     this.audioSource.connect(this.analyser);
+//     this.audioSource.connect(this.ctx.destination);
+//     this.fdata = new Uint8Array(this.analyser.frequencyBinCount);
+//     this.audio.currentTime = 1;
+
+//     // Set up Tweakpane for frequency/amplitude graph
+//     const PARAMS = {
+//       wave: 0, // This will be updated with normalized amplitude
+//     };
+
+//     // const pane = new Pane({
+//     //   title: 'Audio Analysis',
+//     //   expanded: true,
+//     // });
+//     const f1 = pane.addFolder({
+//       title: 'Audio Analysis',
+//       expanded: true,
+//     });
+
+//     f1.addBinding(PARAMS, 'wave', {
+//       readonly: true,
+//       view: 'graph',
+//       min: -1,
+//       max: +1,
+//       label: 'Amplitude',
+//     });
+
+//     // Store PARAMS so we can update it in the update method
+//     this.PARAMS = PARAMS;
+//   }
+
+//   play() {
+//     this.audio.play();
+//     this.playFlag = true;
+//     raf.subscribe('audioReactorUpdate', this.update.bind(this));
+//   }
+
+//   pause() {
+//     this.audio.pause();
+//     this.playFlag = false;
+//     raf.unsubscribe('audioReactorUpdate');
+//   }
+
+//   update() {
+//     this.analyser.getByteFrequencyData(this.fdata);
+
+//     // Compute average amplitude from frequency data
+//     let sum = 0;
+//     for (let i = 0; i < this.fdata.length; i++) {
+//       sum += this.fdata[i];
+//     }
+//     const avgAmplitude = sum / this.fdata.length; // Value between 0 and 255
+
+//     // Normalize to range -1 to +1
+//     const normalizedAmplitude = (avgAmplitude / 255) * 2 - 1; // Maps 0-255 to -1 to +1
+
+//     // Update the PARAMS.wave value for the graph
+//     this.PARAMS.wave = normalizedAmplitude;
+//   }
+
+//   bind() {
+//     this.init = this.init.bind(this);
+//     this.update = this.update.bind(this);
+//     this.play = this.play.bind(this);
+//     this.pause = this.pause.bind(this);
+//   }
+// }
 
 class CamParallax {
   constructor() {
@@ -241,11 +402,33 @@ class SpherePillerClass {
       }
     );
 
-    const sphereFolder = gui.addFolder('Sphere Pillards');
-    sphereFolder.open();
-    sphereFolder.add(this.params, 'waveSpeed', 0.001, 1.5).name('Wave Speed');
-    sphereFolder.add(this.params, 'subDiv', 2, 5).step(1).name('Ico Subdivisions').onChange(() => this.computePositions());
-    sphereFolder.add(this.params, 'pillardSize', 0.01, 0.25).name('Pill Size').onChange(() => this.computePositions());
+    // const sphereFolder = gui.addFolder('Sphere Pillards');
+    // sphereFolder.open();
+    // sphereFolder.add(this.params, 'waveSpeed', 0.001, 1.5).name('Wave Speed');
+    // sphereFolder.add(this.params, 'subDiv', 2, 5).step(1).name('Ico Subdivisions').onChange(() => this.computePositions());
+    // sphereFolder.add(this.params, 'pillardSize', 0.01, 0.25).name('Pill Size').onChange(() => this.computePositions());
+
+    const f = pane.addFolder({
+      title: 'Sphere Pillars',
+      expanded: true,
+    });
+    
+    f.addBinding(this.params, 'waveSpeed', {
+      min: 0.001,
+      max: 1.5,
+      label: 'Movement Speed'
+    });
+    f.addBinding(this.params, 'subDiv', {
+      min: 2,
+      max: 5,
+      step: 1,
+      label: 'Subdivisions'
+    }).on('change', () => this.computePositions());
+    f.addBinding(this.params, 'pillardSize', {
+      min: 0.01,
+      max: 0.25,
+      label: 'Pillars Size'
+    }).on('change', () => this.computePositions());
   }
 
   computePositions() {
@@ -357,11 +540,11 @@ class Spectrum {
       }
     );
 
-    const shaderFolder = gui.addFolder("Spectrum Folder");
-    shaderFolder.open();
-    shaderFolder.add(this.uniforms.uSpecterSize, "value", -1, 1).name('Spectrum Size');
-    shaderFolder.add(this.uniforms.uWaveBorder, "value", 0, 1).name('Border Size');
-    shaderFolder.add(this.uniforms.uWaveSpeed, "value", 0, 0.5).name('Wave speed');
+    // const shaderFolder = gui.addFolder("Spectrum Folder");
+    // shaderFolder.open();
+    // shaderFolder.add(this.uniforms.uSpecterSize, "value", -1, 1).name('Spectrum Size');
+    // shaderFolder.add(this.uniforms.uWaveBorder, "value", 0, 1).name('Border Size');
+    // shaderFolder.add(this.uniforms.uWaveSpeed, "value", 0, 0.5).name('Wave speed');
     // shaderFolder.addColor(this.uniforms.uBorderColor, "value").name('Border Color')
     // // Custom controls for purple range
     const colorSettings = {
@@ -375,7 +558,36 @@ class Spectrum {
     };
 
     // shaderFolder.add(colorSettings, "hue", 270, 300).name('Border Hue').onChange(updateBorderColor);
-    shaderFolder.add(colorSettings, "lightness", 20, 80).name('Border Lightness').onChange(updateBorderColor);
+    // shaderFolder.add(colorSettings, "lightness", 20, 80).name('Border Lightness').onChange(updateBorderColor);
+
+
+    const f = pane.addFolder({
+      title: 'Spectrum Settings',
+      expanded: true,
+    });
+
+    f.addBinding(this.uniforms.uSpecterSize, 'value', {
+      min: -1,
+      max: 1,
+      label: 'Spectrum Size'
+    });
+    f.addBinding(this.uniforms.uWaveBorder, 'value', {
+      min: 0,
+      max: 1,
+      label: 'Border Size'
+    });
+    f.addBinding(this.uniforms.uWaveSpeed, 'value', {
+      min: 0,
+      max: 0.5,
+      label: 'Wave speed'
+    });
+    f.addBinding(colorSettings, 'lightness', {
+      min: 5,
+      max: 100,
+      step: 1,
+      label: 'Color Brightness'
+    }).on('change', updateBorderColor);
+
   }
 
   update() {
@@ -387,6 +599,132 @@ class Spectrum {
     this.update = this.update.bind(this);
   }
 }
+
+// class MainThreeScene {
+//   constructor() {
+//     this.bind();
+//   }
+
+//   async init() {
+//     this.renderer = new THREE.WebGLRenderer({ 
+//         canvas: document.getElementById('webgl'), 
+//         antialias: true 
+//     });
+//     this.renderer.setSize(window.innerWidth, window.innerHeight);
+//     this.renderer.outputEncoding = THREE.sRGBEncoding;
+//     this.renderer.toneMapping = THREE.LinearToneMapping;
+//     this.renderer.toneMappingExposure = 0.5;
+//     // this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+
+//     const color = new THREE.Color(0x151515);
+//     const fog = new THREE.Fog(color, 3, 30); // Adjusted fog for better visibility
+//     this.scene = new THREE.Scene();
+//     this.scene.fog = fog;
+//     this.scene.background = color;
+
+//     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+//     this.camera.position.set(0, 0, 6.5); // Moved camera up for better floor view
+//     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+//     this.controls.enabled = false;
+//     this.controls.maxDistance = 8;
+//     this.controls.minDistance = 3;
+//     this.controls.minPolarAngle = 0;
+//     this.controls.maxPolarAngle = Math.PI / 2 + 0.3;
+
+
+//     camParallax.init(this.camera);
+
+//     // const camFolder = gui.addFolder("Camera Folder");
+//     // camFolder.open();
+//     // camFolder.add(this.controls, "enabled").onChange(() => {
+//     //   if (this.controls.enabled) camParallax.active = false;
+//     // }).listen().name('Orbit Controls');
+//     // camFolder.add(camParallax, "active").onChange(() => {
+//     //   if (camParallax.active) this.controls.enabled = false;
+//     // }).listen().name('Cam Parallax');
+//     // camFolder.add(camParallax.params, "intensity", 0.001, 0.006);
+//     // camFolder.add(camParallax.params, "ease", 0.01, 0.08);
+
+//     // const f = pane.addFolder({
+//     //   title: 'Camera / Orbit Controls',
+//     //   expanded: true,
+//     // });
+
+//     // f.addBinding(this.controls, 'enabled', { label:'Orbit Controls' }).on('change', () => {
+//     //   if (this.controls.enabled) this.camParallax.active = false;
+//     // });
+//     // f.addBinding(camParallax, 'active', { label:'Cam Parallax' }).on('change', () => {
+//     //   if (camParallax.active) this.controls.enabled = false;
+//     // });
+
+//     const f = pane.addFolder({
+//       title: 'Camera / Orbit Controls',
+//       expanded: true,
+//     });
+
+//     f.addBinding(this.controls, 'enabled', { label: 'Orbit Controls' }).on('change', () => {
+//       if (this.controls.enabled) {
+//         camParallax.active = false;
+//         parallaxBinding.refresh(); // Refresh the Cam Parallax toggle UI
+//       }
+//     });
+
+//     f.addBinding(camParallax, 'active', { label: 'Cam Parallax' }).on('change', () => {
+//       if (camParallax.active)  {
+//         this.controls.enabled = false;
+//         orbitBinding.refresh(); // Refresh the Orbit Controls toggle UI
+//       }
+//     });
+
+
+//     spherePillerClass.init(this.scene);
+//     floorClass.init(this.scene);
+//     spectrumClass.init(this.scene);
+//     particleSystem.init(this.scene);
+
+//     // gui.show(); // Enabled GUI for debugging
+
+//     const playPauseButton = document.getElementById('playPauseButton');
+//     let initFlag = false;
+//     playPauseButton.addEventListener('click', () => {
+//       if (!initFlag) {
+//         initFlag = true;
+//         soundReactor.init();
+//       }
+//       if (soundReactor.playFlag) {
+//         soundReactor.pause();
+//         playPauseButton.textContent = 'Play';
+//       } else {
+//         soundReactor.play();
+//         playPauseButton.textContent = 'Pause';
+//       }
+//     });
+
+//     window.addEventListener("resize", this.resizeCanvas.bind(this));
+//     raf.subscribe('threeSceneUpdate', this.update.bind(this));
+//   }
+
+//   update() {
+//     this.renderer.render(this.scene, this.camera);
+//     this.scene.rotateY(0.0015);
+//     spherePillerClass.update();
+//     spectrumClass.update();
+//     particleSystem.update();
+//     camParallax.update();
+//   }
+
+//   resizeCanvas() {
+//     this.renderer.setSize(window.innerWidth, window.innerHeight);
+//     this.camera.aspect = window.innerWidth / window.innerHeight;
+//     this.camera.updateProjectionMatrix();
+//   }
+
+//   bind() {
+//     this.init = this.init.bind(this);
+//     this.update = this.update.bind(this);
+//     this.resizeCanvas = this.resizeCanvas.bind(this);
+//   }
+// }
 
 class MainThreeScene {
   constructor() {
@@ -401,17 +739,21 @@ class MainThreeScene {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.toneMapping = THREE.LinearToneMapping;
-    this.renderer.toneMappingExposure = 0.5;
-    // this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+    
+    this.exposure = {
+      value: 0.5
+    }
+
+    this.renderer.toneMappingExposure = this.exposure.value;
 
     const color = new THREE.Color(0x151515);
-    const fog = new THREE.Fog(color, 3, 30); // Adjusted fog for better visibility
+    const fog = new THREE.Fog(color, 3, 30);
     this.scene = new THREE.Scene();
     this.scene.fog = fog;
     this.scene.background = color;
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-    this.camera.position.set(0, 0, 6.5); // Moved camera up for better floor view
+    this.camera.position.set(0, 0, 6.5);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enabled = false;
     this.controls.maxDistance = 8;
@@ -419,26 +761,46 @@ class MainThreeScene {
     this.controls.minPolarAngle = 0;
     this.controls.maxPolarAngle = Math.PI / 2 + 0.3;
 
-
     camParallax.init(this.camera);
 
-    const camFolder = gui.addFolder("Camera Folder");
-    camFolder.open();
-    camFolder.add(this.controls, "enabled").onChange(() => {
-      if (this.controls.enabled) camParallax.active = false;
-    }).listen().name('Orbit Controls');
-    camFolder.add(camParallax, "active").onChange(() => {
-      if (camParallax.active) this.controls.enabled = false;
-    }).listen().name('Cam Parallax');
-    camFolder.add(camParallax.params, "intensity", 0.001, 0.006);
-    camFolder.add(camParallax.params, "ease", 0.01, 0.08);
+    // // Set up Tweakpane
+    // const pane = new Pane({
+    //   title: 'Controls',
+    //   expanded: true,
+    // });
+
+    const f = pane.addFolder({
+      title: 'Controls',
+      expanded: true,
+    });
+
+    // Store references to the bindings
+    const orbitBinding = f.addBinding(this.controls, 'enabled', { label: 'Orbit Controls' }).on('change', () => {
+      if (this.controls.enabled) {
+        camParallax.active = false;
+        parallaxBinding.refresh(); // Refresh the Cam Parallax toggle UI
+      }
+    });
+
+    const parallaxBinding = f.addBinding(camParallax, 'active', { label: 'Cam Parallax' }).on('change', () => {
+      if (camParallax.active) {
+        this.controls.enabled = false;
+        orbitBinding.refresh(); // Refresh the Orbit Controls toggle UI
+      }
+    });
+
+    f.addBinding(this.exposure, 'value', {
+      min: 0.1,
+      max: 1,
+      label: 'Exposure'
+    }).on('change', (ev) => {
+      this.renderer.toneMappingExposure = ev.value;
+    });
 
     spherePillerClass.init(this.scene);
     floorClass.init(this.scene);
     spectrumClass.init(this.scene);
     particleSystem.init(this.scene);
-
-    gui.show(); // Enabled GUI for debugging
 
     const playPauseButton = document.getElementById('playPauseButton');
     let initFlag = false;
@@ -482,15 +844,205 @@ class MainThreeScene {
   }
 }
 
+// const pane = new Pane();
+// pane.addBlade({
+//   view: 'list',
+//   label: 'scene',
+//   options: [
+//     {text: 'loading', value: 'LDG'},
+//     {text: 'menu', value: 'MNU'},
+//     {text: 'field', value: 'FLD'},
+//   ],
+//   value: 'LDG',
+// });
+
+// const pane = new Pane();
+
+// const soundSrc = {
+//   url: '/audios/sankatmochan.mp3',
+// };
+
+// pane.addBinding(soundSrc, 'url', {
+//   label: "Sound",
+//   view: 'list',
+//   options: [
+//     { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
+//     { text: 'Track 3', value: '/audios/3.mp3' },
+//     { text: 'Track 2', value: '/audios/2.mp3' },
+//   ]
+// });
+
+// pane.on('change', (ev) => {
+//   // if (ev.presetKey === 'url') {
+//     // soundSrc.url = ev.value;
+//     soundReactor = new SoundReactor(soundSrc.url);
+//     soundReactor.init();
+//   // }
+// });
+
+// const raf = new RAF();
+// const loadingController = new LoadingController();
+// let soundReactor = new SoundReactor(soundSrc.url);
+
+
+// // Set up the Tweakpane graph for soundReactor only once
+// const audioFolder = pane.addFolder({
+//   title: 'Audio Analysis',
+//   expanded: true,
+// });
+
+// audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
+//   readonly: true,
+//   view: 'graph',
+//   min: -1,
+//   max: +1,
+//   label: 'Amplitude',
+// });
+
+// // pane.on('change', (ev) => {
+// //   // if (ev.presetKey === 'url') {
+// //     soundReactor.setAudioSource(ev.value);
+// //     soundSrc.url = ev.value;
+// //     soundReactor = new SoundReactor(soundSrc.url);
+// //     soundReactor.init();
+// //   // }
+// // });
+
+// const camParallax = new CamParallax();
+// const particleSystem = new ParticleSystem();
+// const floorClass = new Floor();
+// const spherePillerClass = new SpherePillerClass();
+// const spectrumClass = new Spectrum();
+
+
+// loadingController.onProgress = (url, loaded, total) => {
+//   const progressFill = document.getElementById('progressFill');
+//   const progressUrl = document.getElementById('progressUrl');
+//   progressUrl.textContent = url;
+//   progressFill.style.width = (loaded / total * 100) + '%';
+// };
+
+// loadingController.onLoad = () => {
+//   const loadingScreen = document.getElementById('loadingScreen');
+//   loadingScreen.classList.add('finished');
+// };
+
+// const mainScene = new MainThreeScene();
+// mainScene.init();
+
+
+
+// const pane = new Pane();
+
+// const soundSrc = {
+//   url: '/audios/sankatmochan.mp3',
+// };
+
+// pane.addBinding(soundSrc, 'url', {
+//   label: "Sound",
+//   view: 'list',
+//   options: [
+//     { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
+//     { text: 'Track 3', value: '/audios/3.mp3' },
+//     { text: 'Track 2', value: '/audios/2.mp3' },
+//   ]
+// });
+// pane.on('change', (ev) => {
+//   // console.log(ev.presetKey)
+//   // if (ev.presetKey == 'url') {
+//     soundSrc.url = ev.value;
+
+//     soundReactor = new SoundReactor(soundSrc.url);
+//     soundReactor.init();
+
+//   // }
+// });
+
+// const raf = new RAF();
+// const loadingController = new LoadingController();
+// let soundReactor = new SoundReactor(soundSrc.url);
+
+// //Set up the Tweakpane graph for soundReactor only once
+// const audioFolder = pane.addFolder({
+//   title: 'Audio Analysis',
+//   expanded: true,
+// });
+
+// audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
+//   readonly: true,
+//   view: 'graph',
+//   min: -1,
+//   max: +1,
+//   label: 'Amplitude',
+// });
+
+
+
+// const camParallax = new CamParallax();
+// const particleSystem = new ParticleSystem();
+// const floorClass = new Floor();
+// const spherePillerClass = new SpherePillerClass();
+// const spectrumClass = new Spectrum();
+
+// loadingController.onProgress = (url, loaded, total) => {
+//   const progressFill = document.getElementById('progressFill');
+//   const progressUrl = document.getElementById('progressUrl');
+//   progressUrl.textContent = url;
+//   progressFill.style.width = (loaded / total * 100) + '%';
+// };
+
+// loadingController.onLoad = () => {
+//   const loadingScreen = document.getElementById('loadingScreen');
+//   loadingScreen.classList.add('finished');
+// };
+
+// const mainScene = new MainThreeScene();
+// mainScene.init();
+
+
+
+const pane = new Pane();
+
+const soundSrc = {
+  url: '/audios/sankatmochan.mp3',
+};
+
+pane.addBinding(soundSrc, 'url', {
+  label: "Sound",
+  view: 'list',
+  options: [
+    { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
+    { text: 'Track 3', value: '/audios/3.mp3' },
+    { text: 'Track 2', value: '/audios/2.mp3' },
+  ]
+}).on('change', (ev) => {
+  soundSrc.url = ev.value;
+  soundReactor.setAudioSource(ev.value);
+});
+
 const raf = new RAF();
 const loadingController = new LoadingController();
-const soundReactor = new SoundReactor('/audios/sankatmochan.mp3');
+let soundReactor = new SoundReactor(soundSrc.url);
+
+// Set up the Tweakpane graph for soundReactor
+const audioFolder = pane.addFolder({
+  title: 'Audio Analysis',
+  expanded: true,
+});
+
+audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
+  readonly: true,
+  view: 'graph',
+  min: -1,
+  max: +1,
+  label: 'Amplitude',
+});
+
 const camParallax = new CamParallax();
 const particleSystem = new ParticleSystem();
 const floorClass = new Floor();
 const spherePillerClass = new SpherePillerClass();
 const spectrumClass = new Spectrum();
-const gui = new dat.GUI();
 
 loadingController.onProgress = (url, loaded, total) => {
   const progressFill = document.getElementById('progressFill');
@@ -506,3 +1058,70 @@ loadingController.onLoad = () => {
 
 const mainScene = new MainThreeScene();
 mainScene.init();
+
+
+// const pane = new Pane();
+
+// const soundSrc = {
+//   url: '/audios/sankatmochan.mp3',
+// };
+
+// pane.addBinding(soundSrc, 'url', {
+//   label: "Sound",
+//   view: 'list',
+//   options: [
+//     { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
+//     { text: 'Track 3', value: '/audios/3.mp3' },
+//     { text: 'Track 2', value: '/audios/2.mp3' },
+//   ]
+// });
+
+// const raf = new RAF();
+// const loadingController = new LoadingController();
+// let soundReactor = new SoundReactor(soundSrc.url);
+
+// // Set up the Tweakpane graph for soundReactor only once
+// const audioFolder = pane.addFolder({
+//   title: 'Audio Analysis',
+//   expanded: true,
+// });
+
+// audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
+//   readonly: true,
+//   view: 'graph',
+//   min: -1,
+//   max: +1,
+//   label: 'Amplitude',
+// });
+
+// pane.on('change', (ev) => {
+//   if (ev.presetKey === 'url') {
+//     soundReactor.setAudioSource(ev.value);
+//     soundReactor = new SoundReactor(soundSrc.url);
+//     soundReactor.init();
+//   }
+// });
+
+// const camParallax = new CamParallax();
+// const particleSystem = new ParticleSystem();
+// const floorClass = new Floor();
+// const spherePillerClass = new SpherePillerClass();
+// const spectrumClass = new Spectrum();
+
+// loadingController.onProgress = (url, loaded, total) => {
+//   const progressFill = document.getElementById('progressFill');
+//   const progressUrl = document.getElementById('progressUrl');
+//   progressUrl.textContent = url;
+//   progressFill.style.width = (loaded / total * 100) + '%';
+// };
+
+// loadingController.onLoad = () => {
+//   const loadingScreen = document.getElementById('loadingScreen');
+//   loadingScreen.classList.add('finished');
+// };
+
+// const mainScene = new MainThreeScene();
+// mainScene.init();
+
+
+
