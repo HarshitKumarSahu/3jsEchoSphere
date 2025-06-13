@@ -659,6 +659,7 @@ pane.addBinding(soundSrc, 'url', {
 });
 
 
+
 // Set up Tweakpane graph for soundReactor
 const audioFolder = pane.addFolder({
   title: 'Audio Analysis',
@@ -704,6 +705,8 @@ loadingController.onLoad = () => {
   const loadingScreen = document.getElementById('loadingScreen');
   loadingScreen.classList.add('finished');
 };
+
+
 
 const mainScene = new MainThreeScene();
 mainScene.init();

@@ -71,8 +71,8 @@ body {
 }
 .titleScreen .topLeft {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 10px;
+  left: 10px;
   color: white;
   font-family: futura;
   /* padding: 100px; */
