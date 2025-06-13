@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SoundPillards</title>
+  <title>EchoSphere</title>
   <link rel="stylesheet" href="/src/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet"> -->
 </head>
 <body>
   <div class="loadingScreen" id="loadingScreen">
@@ -19,16 +19,15 @@
   </div>
   <div class="titleScreen">
     <div class="topLeft">
-      <h1>SoundPillards</h1>
-      <p>A simple creative coding example</p>
+      <h1>EchoSphere</h1>
+      <p>Immersive Audio-Reactive 3D Visualse</p>
     </div>
-    <button id="playPauseButton">Play</button>
+    <div id="controls">
+      <span id="time">00:00 // 00:00</span>
+      <button id="playPauseButton">Play</button>
+    </div>
   </div>
   <canvas id="webgl"></canvas>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://unpkg.com/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://unpkg.com/dat.gui@0.7.7/build/dat.gui.min.js"></script> -->
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
