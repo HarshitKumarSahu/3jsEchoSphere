@@ -71,8 +71,8 @@ body {
 }
 .titleScreen .topLeft {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 1rem;
+  left: 1rem;
   color: white;
   font-family: futura;
   /* padding: 100px; */
@@ -108,13 +108,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  flex-direction: column;
+  /* flex-direction: column; */
   color: white;
   position: absolute;
-  bottom: 2%;
-  right: 5%;
+  bottom: 1rem;
+  right: 1rem;
+}
+#controls #items {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 #controls button {
+  width: 100%;
   color: white;
   background: transparent;
   border-radius: 20px;
@@ -127,4 +135,47 @@ body {
 } 
 #controls button:hover {
   background: purple;
+}
+
+
+
+
+
+
+
+
+
+
+/* Tweakpane styles */
+.tp-dfwv {
+  max-width: 100vw;
+  box-sizing: border-box;
+  transition: transform 0.3s ease; /* Smooth transition for animation */
+}
+
+/* Bottom-to-top animation for small screens */
+.bottom-to-top {
+  transform-origin: bottom left; /* Anchor the animation to the bottom-left */
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%); /* Start below the viewport */
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0); /* Slide up to its position */
+    opacity: 1;
+  }
+}
+
+/* Ensure Tweakpane content doesn't overflow on small screens */
+@media (max-width: 600px) {
+  .tp-dfwv {
+    font-size: 12px; /* Slightly smaller font for better fit */
+  }
+  /* .tp-lblv_v { /* Tweakpane label 
+    padding: 4px !important; /* Reduce padding 
+  } */
 }

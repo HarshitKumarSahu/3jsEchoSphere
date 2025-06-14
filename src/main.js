@@ -287,7 +287,7 @@ class SpherePillerClass {
       min: 2,
       max: 5,
       step: 1,
-      label: 'Subdivisions'
+      label: 'Sub Divisions'
     }).on('change', () => this.computePositions());
     f.addBinding(this.params, 'pillardSize', {
       min: 0.01,
@@ -480,7 +480,9 @@ class MainThreeScene {
     this.scene.background = color;
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-    this.camera.position.set(0, 0, 6.5);
+    let cameraZ = window.innerWidth > 600 ? 6.5 : 9.5;
+    // this.camera.position.set(0, 0, 6.5);
+    this.camera.position.set(0, 0, cameraZ);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enabled = false;
     this.controls.maxDistance = 8;
@@ -635,7 +637,35 @@ const formatTime = (seconds) => {
   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
-const pane = new Pane();
+const pane = new Pane({
+  title: "Customization",
+  expanded: window.innerWidth > 600
+});
+
+const adjustPaneWidth = () => {
+  const paneElement = document.querySelector('.tp-dfwv');
+  if (paneElement) {
+    if (window.innerWidth < 600) {
+      // Small screens: 50vw width, bottom-left position, add class for bottom-to-top animation
+      paneElement.style.width = '62vw';
+      paneElement.style.top = 'auto';
+      paneElement.style.right = 'auto';
+      paneElement.style.bottom = '1rem';
+      paneElement.style.left = '1rem';
+      paneElement.style.fontSize = '0.75rem';
+      paneElement.classList.add('bottom-to-top');
+    } else {
+      // Larger screens: 320px width, default top-right position, remove bottom-to-top class
+      // paneElement.style.width = '320px';
+      paneElement.style.top = '1rem';
+      paneElement.style.right = '1rem';
+      // paneElement.style.bottom = 'auto';
+      // paneElement.style.left = 'auto';
+      paneElement.classList.remove('bottom-to-top');
+    }
+  }
+};
+
 const raf = new RAF();
 const loadingController = new LoadingController();
 let soundReactor = new SoundReactor('/audios/sankatmochan.mp3'); // Default track
@@ -679,9 +709,9 @@ const updateTimeDisplay = () => {
   if (soundReactor.audio) {
     const currentTime = soundReactor.audio.currentTime || 0;
     const duration = soundReactor.audio.duration || 0;
-    timeDisplay.textContent = `${formatTime(currentTime)} // ${formatTime(duration)}`;
+    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
   } else {
-    timeDisplay.textContent = '00:00 // 00:00';
+    timeDisplay.textContent = '00:00 / 00:00';
   }
 };
 raf.subscribe('timeDisplayUpdate', updateTimeDisplay);
@@ -706,7 +736,8 @@ loadingController.onLoad = () => {
   loadingScreen.classList.add('finished');
 };
 
-
+adjustPaneWidth();
+window.addEventListener('resize', adjustPaneWidth);
 
 const mainScene = new MainThreeScene();
 mainScene.init();
