@@ -567,69 +567,6 @@ class MainThreeScene {
   }
 }
 
-
-
-// const pane = new Pane();
-
-// const soundSrc = {
-//   url: '/audios/sankatmochan.mp3',
-// };
-
-// pane.addBinding(soundSrc, 'url', {
-//   label: "Sound",
-//   view: 'list',
-//   options: [
-//     { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
-//     { text: 'Track 3', value: '/audios/3.mp3' },
-//     { text: 'Track 2', value: '/audios/2.mp3' },
-//   ]
-// }).on('change', (ev) => {
-//   soundSrc.url = ev.value;
-//   soundReactor.setAudioSource(ev.value);
-// });
-
-// const raf = new RAF();
-// const loadingController = new LoadingController();
-// let soundReactor = new SoundReactor(soundSrc.url);
-// // let soundReactor = new SoundReactor('/audios/sankatmochan.mp3'); 
-
-// // Set up the Tweakpane graph for soundReactor
-// const audioFolder = pane.addFolder({
-//   title: 'Audio Analysis',
-//   expanded: true,
-// });
-
-// audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
-//   readonly: true,
-//   view: 'graph',
-//   min: -1,
-//   max: +1,
-//   label: 'Amplitude',
-// });
-
-// const camParallax = new CamParallax();
-// const particleSystem = new ParticleSystem();
-// const floorClass = new Floor();
-// const spherePillerClass = new SpherePillerClass();
-// const spectrumClass = new Spectrum();
-
-// loadingController.onProgress = (url, loaded, total) => {
-//   const progressFill = document.getElementById('progressFill');
-//   const progressUrl = document.getElementById('progressUrl');
-//   progressUrl.textContent = url;
-//   progressFill.style.width = (loaded / total * 100) + '%';
-// };
-
-// loadingController.onLoad = () => {
-//   const loadingScreen = document.getElementById('loadingScreen');
-//   loadingScreen.classList.add('finished');
-// };
-
-// const mainScene = new MainThreeScene();
-// mainScene.init();
-
-
-
 const formatTime = (seconds) => {
   if (isNaN(seconds) || seconds < 0) return '00:00';
   const minutes = Math.floor(seconds / 60);
@@ -646,7 +583,6 @@ const adjustPaneWidth = () => {
   const paneElement = document.querySelector('.tp-dfwv');
   if (paneElement) {
     if (window.innerWidth < 600) {
-      // Small screens: 50vw width, bottom-left position, add class for bottom-to-top animation
       paneElement.style.width = '62vw';
       paneElement.style.top = 'auto';
       paneElement.style.right = 'auto';
@@ -655,12 +591,8 @@ const adjustPaneWidth = () => {
       paneElement.style.fontSize = '0.75rem';
       paneElement.classList.add('bottom-to-top');
     } else {
-      // Larger screens: 320px width, default top-right position, remove bottom-to-top class
-      // paneElement.style.width = '320px';
       paneElement.style.top = '1rem';
       paneElement.style.right = '1rem';
-      // paneElement.style.bottom = 'auto';
-      // paneElement.style.left = 'auto';
       paneElement.classList.remove('bottom-to-top');
     }
   }
@@ -668,7 +600,7 @@ const adjustPaneWidth = () => {
 
 const raf = new RAF();
 const loadingController = new LoadingController();
-let soundReactor = new SoundReactor('/audios/sankatmochan.mp3'); // Default track
+let soundReactor = new SoundReactor('/audios/sankatmochan.mp3');
 
 const soundSrc = {
   url: '/audios/sankatmochan.mp3',
@@ -685,12 +617,9 @@ pane.addBinding(soundSrc, 'url', {
   soundSrc.url = ev.value;
   soundReactor.setAudioSource(ev.value);
   const playPauseButton = document.getElementById('playPauseButton');
-  playPauseButton.disabled = false; // Enable play button when a track is selected
+  playPauseButton.disabled = false;
 });
 
-
-
-// Set up Tweakpane graph for soundReactor
 const audioFolder = pane.addFolder({
   title: 'Audio Analysis',
   expanded: true,
@@ -703,7 +632,6 @@ audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
   label: 'Amplitude',
 });
 
-// Update time display
 const timeDisplay = document.getElementById('time');
 const updateTimeDisplay = () => {
   if (soundReactor.audio) {
@@ -715,8 +643,6 @@ const updateTimeDisplay = () => {
   }
 };
 raf.subscribe('timeDisplayUpdate', updateTimeDisplay);
-
-// Tweakpane audio selection
 
 const camParallax = new CamParallax();
 const particleSystem = new ParticleSystem();
