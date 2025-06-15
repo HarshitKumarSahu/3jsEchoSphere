@@ -79,6 +79,7 @@ class SoundReactor {
 
     if (this.playFlag) {
       this.audio.play();
+      this.audio.loop = true;
     }
   }
 
@@ -88,6 +89,7 @@ class SoundReactor {
     }
     this.audio.play();
     this.playFlag = true;
+    this.audio.loop = true;
     raf.subscribe('audioReactorUpdate', this.update.bind(this));
   }
 
@@ -603,19 +605,18 @@ const adjustPaneWidth = () => {
 
 const raf = new RAF();
 const loadingController = new LoadingController();
-let soundReactor = new SoundReactor('/audios/sankatmochan.mp3');
+let soundReactor = new SoundReactor('/audios/SankatMochan.mp3');
 
 const soundSrc = {
-  url: '/audios/sankatmochan.mp3',
+  url: '/audios/SankatMochan.mp3',
 };
 pane.addBinding(soundSrc, 'url', {
   label: 'Sound',
   view: 'list',
   options: [
-    { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
-    { text: 'Mangal Bhavan', value: '/audios/MangalBhavan.mp3' },
-    { text: 'Hanuman Chalisa', value: '/audios/HanumanChalisa.mp3' },
-    { text: 'Pachra', value: '/audios/Pachra.mp3' },
+    { text: 'Sankat Mochan', value: '/audios/SankatMochan.mp3' },
+    { text: 'Mangal Bhavan', value: '/audios/MangalBhawan.mp3' },
+    { text: 'Pachra Maa Kali', value: '/audios/Pachra.mp3' },
   ]
 }).on('change', (ev) => {
   soundSrc.url = ev.value;
