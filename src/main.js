@@ -474,10 +474,13 @@ class MainThreeScene {
     this.renderer.toneMappingExposure = this.exposure.value;
 
     const color = new THREE.Color(0x151515);
-    const fog = new THREE.Fog(color, 3, 30);
+    // const fog = new THREE.Fog(color, 3, 30);
+    const color1 = new THREE.Color(0x140A1F);
+    const fog = new THREE.Fog(color1, 3, 30);
     this.scene = new THREE.Scene();
     this.scene.fog = fog;
-    this.scene.background = color;
+    // this.scene.background = color; 
+    // this.scene.background = new THREE.Color(0x1C0F2A);
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
     let cameraZ = window.innerWidth > 600 ? 6.5 : 9.5;
@@ -610,8 +613,9 @@ pane.addBinding(soundSrc, 'url', {
   view: 'list',
   options: [
     { text: 'Sankat Mochan', value: '/audios/sankatmochan.mp3' },
-    { text: 'Track 3', value: '/audios/3.mp3' },
-    { text: 'Track 2', value: '/audios/2.mp3' },
+    { text: 'Mangal Bhavan', value: '/audios/MangalBhavan.mp3' },
+    { text: 'Hanuman Chalisa', value: '/audios/HanumanChalisa.mp3' },
+    { text: 'Pachra', value: '/audios/Pachra.mp3' },
   ]
 }).on('change', (ev) => {
   soundSrc.url = ev.value;
