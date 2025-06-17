@@ -74,6 +74,11 @@ body {
   left: 1rem;
   color: white;
   font-family: futura;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 #webgl {
   width: 100vw;

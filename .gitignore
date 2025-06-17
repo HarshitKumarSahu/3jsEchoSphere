@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+/src/testing/test.js 
+/src/testing/test2.js
