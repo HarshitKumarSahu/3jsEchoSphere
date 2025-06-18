@@ -112,7 +112,7 @@ class SoundReactor {
     if (!this.isInitialized) return;
     this.analyser.getByteFrequencyData(this.fdata);
     const avgAmplitude = this.fdata.reduce((sum, val) => sum + val, 0) / this.fdata.length;
-    this.PARAMS.wave = (avgAmplitude / 255) * 2 - 0.5;
+    this.PARAMS.wave = (avgAmplitude / 255) * 2 - 1;
   }
 
   bind() {
@@ -165,7 +165,7 @@ class CamParallax {
 
 class ParticleSystem {
   constructor() {
-    this.particleCount = 5000;
+    this.particleCount = 6000;
     this.boxSize = 30;
     this.bind();
   }
@@ -512,7 +512,7 @@ class MainThreeScene {
     const fog = new THREE.Fog(color, 3, 30);
     this.scene = new THREE.Scene();
     this.scene.fog = fog;
-    this.scene.background = color;
+    // this.scene.background = color;
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
     let cameraZ = window.innerWidth > 600 ? 6.5 : 9.5;
@@ -852,8 +852,8 @@ const audioFolder = pane.addFolder({
 audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
   readonly: true,
   view: 'graph',
-  min: -0.5,
-  max: +0.5,
+  min: -1,
+  max: +1,
   label: 'Amplitude',
 });
 
