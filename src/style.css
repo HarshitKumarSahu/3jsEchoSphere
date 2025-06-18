@@ -1,10 +1,10 @@
 @font-face {
   font-family: futura1;
-  src: url("../public/futura/futuraMedium.ttf");
+  src: url("/futura/futuraMedium.ttf");
 }
 @font-face {
   font-family: futura;
-  src: url("../public/futura/futuraLight.ttf");
+  src: url("/futura/futuraLight.ttf");
 }
 * {
   margin: 0;

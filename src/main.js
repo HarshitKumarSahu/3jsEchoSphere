@@ -112,7 +112,7 @@ class SoundReactor {
     if (!this.isInitialized) return;
     this.analyser.getByteFrequencyData(this.fdata);
     const avgAmplitude = this.fdata.reduce((sum, val) => sum + val, 0) / this.fdata.length;
-    this.PARAMS.wave = (avgAmplitude / 255) * 2 - 1;
+    this.PARAMS.wave = (avgAmplitude / 255) * 2 - 0.5;
   }
 
   bind() {
@@ -407,7 +407,7 @@ class Spectrum {
     });
 
     this.modelLoader.load(
-      '/models/spectrum.glb',
+      '/models/spectrum.glb', // nedd to fix
       (glb) => {
         glb.scene.traverse(child => {
           if (child instanceof THREE.Mesh) {
@@ -487,7 +487,7 @@ class MainThreeScene {
       glitchIntensity: 1.0,
       vignetteOffset: 1.0,
       vignetteDarkness: 1.0,
-      dotScreenScale: 4.0,
+      dotScreenScale: 10.0,
     };
     this.bind();
   }
@@ -741,20 +741,22 @@ class MainThreeScene {
         // Audio-reactive adjustments during playback
         if (this.postProcessingOptions.effect === 'bloom') {
           this.bloomPass.strength = this.postProcessingOptions.bloomStrength + amplitude * 1.5;
+          // this.bloomPass.threshold = 0.5 - amplitude + 0.16;
         } else if (this.postProcessingOptions.effect === 'rgbShift') {
-          this.rgbShiftPass.uniforms.amount.value = this.postProcessingOptions.rgbShiftAmount + amplitude * 0.01;
+          this.rgbShiftPass.uniforms.amount.value = this.postProcessingOptions.rgbShiftAmount + amplitude * 0.05;
         } else if (this.postProcessingOptions.effect === 'glitch') {
           this.glitchPass.goWild = amplitude > 0.5;
           this.glitchPass.uniforms.byp.value = amplitude < 0.2 ? 1 : 0;
         } else if (this.postProcessingOptions.effect === 'vignette') {
-          this.vignettePass.uniforms.darkness.value = this.postProcessingOptions.vignetteDarkness + amplitude * 0.5;
+          this.vignettePass.uniforms.darkness.value = this.postProcessingOptions.vignetteDarkness + amplitude * 0.8;
         } else if (this.postProcessingOptions.effect === 'dotScreen') {
-          this.dotScreenPass.uniforms.scale.value = this.postProcessingOptions.dotScreenScale + amplitude * 2;
+          this.dotScreenPass.uniforms.scale.value = this.postProcessingOptions.dotScreenScale + amplitude * 5;
         }
       } else {
         // Reset to default values when paused
         if (this.postProcessingOptions.effect === 'bloom') {
           this.bloomPass.strength = this.postProcessingOptions.bloomStrength;
+          // this.bloomPass.threshold = 0.85
         } else if (this.postProcessingOptions.effect === 'rgbShift') {
           this.rgbShiftPass.uniforms.amount.value = this.postProcessingOptions.rgbShiftAmount;
         } else if (this.postProcessingOptions.effect === 'glitch') {
@@ -850,8 +852,8 @@ const audioFolder = pane.addFolder({
 audioFolder.addBinding(soundReactor.PARAMS, 'wave', {
   readonly: true,
   view: 'graph',
-  min: -1,
-  max: +1,
+  min: -0.5,
+  max: +0.5,
   label: 'Amplitude',
 });
 
