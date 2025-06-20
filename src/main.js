@@ -165,7 +165,7 @@ class CamParallax {
 
 class ParticleSystem {
   constructor() {
-    this.particleCount = 6000;
+    this.particleCount = 5000;
     this.boxSize = 30;
     this.bind();
   }
@@ -509,10 +509,11 @@ class MainThreeScene {
     this.renderer.toneMappingExposure = this.exposure.value;
 
     const color = new THREE.Color(0x140A1F);
-    const fog = new THREE.Fog(color, 3, 30);
+    const color1 = new THREE.Color(0x09040e);
+    const fog = new THREE.Fog(color1, 3, 30);
     this.scene = new THREE.Scene();
     this.scene.fog = fog;
-    // this.scene.background = color;
+    this.scene.background = color1;
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
     let cameraZ = window.innerWidth > 600 ? 6.5 : 9.5;
@@ -743,7 +744,7 @@ class MainThreeScene {
           this.bloomPass.strength = this.postProcessingOptions.bloomStrength + amplitude * 1.5;
           // this.bloomPass.threshold = 0.5 - amplitude + 0.16;
         } else if (this.postProcessingOptions.effect === 'rgbShift') {
-          this.rgbShiftPass.uniforms.amount.value = this.postProcessingOptions.rgbShiftAmount + amplitude * 0.05;
+          this.rgbShiftPass.uniforms.amount.value = this.postProcessingOptions.rgbShiftAmount + amplitude * 0.015;
         } else if (this.postProcessingOptions.effect === 'glitch') {
           this.glitchPass.goWild = amplitude > 0.5;
           this.glitchPass.uniforms.byp.value = amplitude < 0.2 ? 1 : 0;
