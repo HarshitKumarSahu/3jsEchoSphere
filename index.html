@@ -24,8 +24,15 @@
     </div>
     <div id="controls">
       <div id="items">
-        <span id="time">00:00 / 00:00</span>
-        <button id="playPauseButton">Play</button>
+        <div id="item">
+          <div id="audio-file-label">No file selected</div>
+          <input type="file" id="audio-file-input" accept="audio/*">
+          <button id="upload-audio-btn">Upload Audio</button>
+        </div>
+        <div id="item">
+          <span id="time">00:00 / 00:00</span>
+          <button id="playPauseButton">Play</button>
+        </div>
       </div>
     </div>
     <div class="socials">
@@ -35,7 +42,7 @@
     </div>
   </div>
   <canvas id="webgl"></canvas>
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/main2.js"></script>
   <!-- <script type="module" src="/src/testing/test.js"></script> -->
 </body>
 </html>
