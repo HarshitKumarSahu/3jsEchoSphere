@@ -576,13 +576,8 @@ class MainThreeScene {
         }).on('change', (ev) => {
             this.renderer.toneMappingExposure = ev.value;
         });
-
-        const postProcessingFolder = tab.pages[1].addFolder({
-            title: 'Post-Processing',
-            expanded: true,
-        });
-
-        postProcessingFolder.addBinding(this.postProcessingOptions, 'effect', {
+        
+        tab.pages[1].addBinding(this.postProcessingOptions, 'effect', {
             label: 'Effect',
             view: 'list',
             options: [
@@ -597,7 +592,7 @@ class MainThreeScene {
             this.updatePostProcessing();
         });
 
-        const bloomFolder = postProcessingFolder.addFolder({ title: 'Bloom Settings', expanded: true });
+        const bloomFolder = tab.pages[1].addFolder({ title: 'Bloom Settings', expanded: true });
         bloomFolder.addBinding(this.postProcessingOptions, 'bloomStrength', {
             min: 0,
             max: 3,
@@ -620,7 +615,7 @@ class MainThreeScene {
             this.bloomPass.threshold = ev.value;
         });
 
-        const rgbShiftFolder = postProcessingFolder.addFolder({ title: 'RGB Shift Settings', expanded: true });
+        const rgbShiftFolder = tab.pages[1].addFolder({ title: 'RGB Shift Settings', expanded: true });
         rgbShiftFolder.addBinding(this.postProcessingOptions, 'rgbShiftAmount', {
             min: 0,
             max: 0.05,
@@ -629,14 +624,14 @@ class MainThreeScene {
             this.rgbShiftPass.uniforms.amount.value = ev.value;
         });
 
-        const glitchFolder = postProcessingFolder.addFolder({ title: 'Glitch Settings', expanded: true });
+        const glitchFolder = tab.pages[1].addFolder({ title: 'Glitch Settings', expanded: true });
         glitchFolder.addBinding(this.postProcessingOptions, 'glitchIntensity', {
             min: 0,
             max: 2,
             label: 'Intensity'
         });
 
-        const vignetteFolder = postProcessingFolder.addFolder({ title: 'Vignette Settings', expanded: true });
+        const vignetteFolder = tab.pages[1].addFolder({ title: 'Vignette Settings', expanded: true });
         vignetteFolder.addBinding(this.postProcessingOptions, 'vignetteOffset', {
             min: 0,
             max: 2,
@@ -652,7 +647,7 @@ class MainThreeScene {
             this.vignettePass.uniforms.darkness.value = ev.value;
         });
 
-        const dotScreenFolder = postProcessingFolder.addFolder({ title: 'Dot Screen Settings', expanded: true });
+        const dotScreenFolder = tab.pages[1].addFolder({ title: 'Dot Screen Settings', expanded: true });
         dotScreenFolder.addBinding(this.postProcessingOptions, 'dotScreenScale', {
             min: 1,
             max: 10,

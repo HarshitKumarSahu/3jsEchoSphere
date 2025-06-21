@@ -91,15 +91,11 @@ body {
   justify-content: center;
   align-items: flex-end;
   color: white;
-  /* position: absolute;
-  bottom: 1rem;
-  right: 1rem; */
 }
 #controls #items {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* flex-direction: column; */
   gap: 0.5rem;
   position: absolute;
   bottom: 1rem;
@@ -111,18 +107,8 @@ body {
   justify-content: center;
   flex-direction: column;
   gap: 0.5rem;
-  /* width: 100%; */
-}
-#item:first-child {
-  /* display: flex; */
-  /* align-items: flex-start;
-  justify-content: center;
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem; */
 }
 #controls button {
-  /* width: 100%; */
   color: white;
   background: transparent;
   border-radius: 20px;
@@ -132,40 +118,24 @@ body {
   padding: 10px 30px;
   border: solid purple;
   transition: all 0.3s;
-  /* font-size: 0.75rem; */
 } 
 #controls button:hover {
   background: purple;
 }
-
 #time {
   font-size: 1rem;
 }
-
 #audio-file-input {
   display: none;
 }
 #upload-audio-btn {
-  /* position: fixed;
-  bottom: 60px;
-  left: 20px; */
   padding: 10px 30px !important;
-  /* background: rgba(238, 171, 246, 0.1); */
-  /* border: 1px solid #EEABF6; */
   color: white;
-  /* font-family: monospace; */
   cursor: pointer;
-  /* text-transform: uppercase; */
-  /* font-size: 0.8rem; */
 }
 #audio-file-label {
-  /* position: fixed;
-  bottom: 100px;
-  left: 20px; */
   color: white;
-  /* font-family: monospace; */
   font-size: 1rem;
-  /* max-width: 200px; */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -225,44 +195,3 @@ body {
   background: radial-gradient(circle at center, #140A1F, #0F0F14);
   /* background: radial-gradient(circle at center, #09040e, #0F0F14); */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
