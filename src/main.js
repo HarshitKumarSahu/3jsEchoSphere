@@ -820,7 +820,8 @@ const formatTime = (seconds) => {
 
 const pane = new Pane({
     title: "Customization",
-    expanded: window.innerWidth > 600
+    expanded: false
+    // expanded: window.innerWidth > 600
 });
 
 const adjustPaneWidth = () => {
